@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="css/sample.css">
+<title>GoogleBook検索</title>
+</head>
+<body>
+
+  <header>
+    <h1>GoogleBooks検索</h1>
+    <p>
+      <input class="text" type="text" id="keyword" placeholder="気になるワード">
+      <button id="readbook">検索</button><br>
+    </p>
+    <div class="disc"><p>※タイトルをクリックして詳細表示</p></div>
+  </header>
+
+  <main>
+    <p id="content"></p>
+  </main>
+
+<script src="js/jquery-3.5.1.min.js"></script>
+<script>
+
+const synth = window.speechSynthesis; // WebSpeech API を準備
+const utterance = new SpeechSynthesisUtterance(); // WebSpeech API 設定⽤のライブラリ
+utterance.lang = 'ja-JP'; // ⽇本語に設定
+
+// 手順
+// 1. $.get() を使って 情報を取得する
+// 2. JSONデータ構造を基に本のタイトルを取得する
+// 3. 本のタイトル情報をHTMLに出力する
+// ---ここからは課題！
+// 4. クリックイベントで括る
+// 5. id="keyword"の入力値を取得 → URLの"?q=jquery"の"queryの文字を取得した入力値（変数）に変える"
+// 6. 出版社も表示してみよう！（データ構造はconsole.logで確認！！）
+
+// $.get() を使う[開始]
+$("#readbook").on("click", function(){
+
+  let url = "https://www.googleapis.com/books/v1/volumes?q=jquery"
+  const word = $("#keyword").val();
+  console.log(word)
+
+  url = url.replace("jquery", word) //"jquery"をwordの文字に変換
+
+  $.get(url, function(data){
+    $("#content").empty(); //一度空にする
+    console.log(data);
+    const items = data.items
+    for (let i = 0; i < items.length; i++){
+      console.log(items)
+      const title = items[i].volumeInfo.title;
+      const publisher = items[i].volumeInfo.publisher;
+      const description = items[i].volumeInfo.description　//本の説明
+      const result = `<ul><li id="${[i]}">${title}</li><li>${publisher}</li></ul>`
+      $("#content").append(result) //検索結果表示する
+
+      $(`#${[i]}`).on("click", function(){
+        alert(description) //確認用
+
+        utterance.description = description
+        synth.speak( utterance ); // 喋ってもらう
+      })
+    }
+  })
+})
+// $.get() を使う[終了]
+
+// $("#").on("click", function(){
+//   const text = description(); // decscription 内の⼊⼒情報を取得
+//   console.log(text);
+//   utterance.text = text; // テキスト内容をセット
+//   synth.speak( utterance ); // 喋ってもらう
+// })
+
+
+
+$("#keyword").on("keydown", function(e){
+  
+  if(e.keyCode === 13){
+
+    let url = "https://www.googleapis.com/books/v1/volumes?q=jquery"
+  const word = $("#keyword").val();
+  console.log(word)
+
+  url = url.replace("jquery", word) //"jquery"をwordの文字に変換
+
+  $.get(url, function(data){
+    $("#content").empty(); //一度空にする
+    console.log(data);
+    const items = data.items
+    for (let i = 0; i < items.length; i++){
+      console.log(items)
+      const title = items[i].volumeInfo.title;
+      const publisher = items[i].volumeInfo.publisher;
+      const description = items[i].volumeInfo.description　//本の説明
+      const result = `<ul><li id="${[i]}">${title}</li><li>${publisher}</li></ul>`
+      $("#content").append(result) //検索結果表示する
+
+      $(`#${[i]}`).on("click", function(){
+        alert(description) //確認用
+
+        utterance.description = description
+        synth.speak( utterance ); // 喋ってもらう
+      })
+    }
+  })
+
+  };
+});
+
+
+
+</script>
+</body>
+</html>
